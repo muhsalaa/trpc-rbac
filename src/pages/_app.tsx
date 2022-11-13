@@ -24,6 +24,7 @@ export default withTRPC<AppRouter>({
       }),
     ];
 
+    // global config for react-query
     return {
       queryClientConfig: {
         defaultOptions: {

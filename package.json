@@ -13,7 +13,7 @@
     "@trpc/next": "^9.27.4",
     "@trpc/react": "^9.27.4",
     "@trpc/server": "^9.27.4",
-    "@types/node": "18.11.9",
+    "@types/node": "^18.11.9",
     "@types/react": "18.0.25",
     "@types/react-dom": "18.0.8",
     "eslint": "8.27.0",
