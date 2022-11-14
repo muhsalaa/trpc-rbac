@@ -1,17 +1,26 @@
-import type { AppProps } from "next/app";
+import { type AppType } from "next/app";
+import { type Session } from "next-auth";
 import { withTRPC } from "@trpc/next";
 import { httpBatchLink } from "@trpc/client/links/httpBatchLink";
 import { loggerLink } from "@trpc/client/links/loggerLink";
+import { SessionProvider } from "next-auth/react";
 import SuperJSON from "superjson";
 
-import { AppRouter } from "@/server/route/app.router";
+import { AppRouter } from "@/server/trpc/route/app.router";
 import { url } from "@/constants/url";
 
 import "../styles/globals.css";
 
-function App({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />;
-}
+const App: AppType<{ session: Session | null }> = ({
+  Component,
+  pageProps: { session, ...pageProps },
+}) => {
+  return (
+    <SessionProvider session={session}>
+      <Component {...pageProps} />
+    </SessionProvider>
+  );
+};
 
 export default withTRPC<AppRouter>({
   config() {

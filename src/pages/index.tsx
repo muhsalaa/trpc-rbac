@@ -1,6 +1,8 @@
+import { useSession } from "next-auth/react";
 import { trpc } from "@/utils/trpc";
 
 export default function Home() {
+  const { data: sessionData } = useSession();
   const { data, error, isLoading } = trpc.useQuery(
     ["users.dummy-user", { name: "World" }],
     {
@@ -9,6 +11,8 @@ export default function Home() {
       retry: 2,
     }
   );
+
+  console.log(sessionData);
 
   if (isLoading) {
     return (
