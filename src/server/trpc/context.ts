@@ -14,7 +14,7 @@ export async function createContext({
 }) {
   const session = await getServerSession(req, res, authOptions);
 
-  return { req, res, prisma, session };
+  return { prisma, session };
 }
 
 export type Context = inferAsyncReturnType<typeof createContext>;
