@@ -1,16 +1,16 @@
-import { useSession } from "next-auth/react";
+import { useSession } from 'next-auth/react';
 
-import { trpc } from "@/utils/trpc";
-import { TextInput } from "@/components/TextInput";
-import { Label } from "@/components/Label";
-import { FormControl } from "@/components/FormControl";
-import { FieldInfo } from "@/components/FieldInfo";
-import { pageAuth } from "@/utils/pageAuth";
+import { trpc } from '@/utils/trpc';
+import { TextInput } from '@/components/TextInput';
+import { Label } from '@/components/Label';
+import { FormControl } from '@/components/FormControl';
+import { FieldInfo } from '@/components/FieldInfo';
+import { pageAuth } from '@/utils/pageAuth';
 
 export default function Home() {
   const { data: sessionData } = useSession();
   const { data, error, isLoading } = trpc.user.dummyUser.useQuery(
-    { name: "Andrew" },
+    { name: 'Andrew' },
     {
       // can put configuration for query here
       refetchOnWindowFocus: false,

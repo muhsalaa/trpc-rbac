@@ -1,5 +1,5 @@
-import { router, publicProcedure, protectedProcedure } from "../trpc";
-import { createUserSchema } from "@/schema/user.schema";
+import { router, publicProcedure, protectedProcedure } from '../trpc';
+import { createUserSchema } from '@/schema/user.schema';
 
 export const userRouter = router({
   dummyUser: publicProcedure.input(createUserSchema).query(({ input }) => {
@@ -8,6 +8,6 @@ export const userRouter = router({
     };
   }),
   loginUser: protectedProcedure.query(() => {
-    return "You are logged in and can see this secret message!";
+    return 'You are logged in and can see this secret message!';
   }),
 });

@@ -1,9 +1,9 @@
-import { type inferAsyncReturnType } from "@trpc/server";
-import { NextApiRequest, NextApiResponse } from "next";
-import { unstable_getServerSession as getServerSession } from "next-auth/next";
+import { type inferAsyncReturnType } from '@trpc/server';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { unstable_getServerSession as getServerSession } from 'next-auth/next';
 
-import { prisma } from "../db/client";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { prisma } from '../db/client';
+import { authOptions } from '@/pages/api/auth/[...nextauth]';
 
 export async function createContext({
   req,

@@ -1,17 +1,17 @@
-import { unstable_getServerSession as getServerSession } from "next-auth";
+import { unstable_getServerSession as getServerSession } from 'next-auth';
 
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
-import { PAGE_AUTH } from "@/constants/role";
-import { GetServerSidePropsContext } from "next";
+import { authOptions } from '@/pages/api/auth/[...nextauth]';
+import { PAGE_AUTH } from '@/constants/role';
+import { GetServerSidePropsContext } from 'next';
 
-export const pageAuth = (callback: (ctx: GetServerSidePropsContext) => {}) => {
+export const pageAuth = (callback?: (ctx: GetServerSidePropsContext) => {}) => {
   return async (ctx: GetServerSidePropsContext) => {
     const session = await getServerSession(ctx.req, ctx.res, authOptions);
 
     if (!session) {
       return {
         redirect: {
-          destination: "/auth/login",
+          destination: '/auth/login',
           permanent: false,
         },
       };

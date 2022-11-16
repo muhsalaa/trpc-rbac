@@ -1,0 +1,17 @@
+{
+  "plugins": ["@typescript-eslint"],
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "prettier"
+  ],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "project": "./tsconfig.json"
+  },
+  "rules": {
+    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/no-explicit-any": "error",
+    "react/jsx-props-no-spreading": "off"
+  }
+}
