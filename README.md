@@ -1,4 +1,4 @@
-Simple RBAC using t3 stack:
+# Simple RBAC using t3 stack:
 
 - NextJS
 - Typescript
@@ -6,3 +6,8 @@ Simple RBAC using t3 stack:
 - TailwindCSS
 - Prisma
 - React-Query
+- Next-Auth
+
+## Authentication
+
+- Currently only email Magic Link
