@@ -18,3 +18,12 @@ export const loginUserSchema = z
   .required();
 
 export type LoginUserInput = z.TypeOf<typeof loginUserSchema>;
+
+// ================ GET USER DATA SCHEMA ================
+export const getUserDataSchema = z
+  .object({
+    id: z.string().min(1, { message: 'Id must not be empty' }),
+  })
+  .required();
+
+export type GetUserDataInput = z.TypeOf<typeof getUserDataSchema>;

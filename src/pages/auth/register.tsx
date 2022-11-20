@@ -9,28 +9,32 @@ import { Label } from '@/components/Label';
 import { FieldInfo } from '@/components/FieldInfo';
 import { pageAuth } from '@/utils/pageAuth';
 import { getBaseUrl, trpc } from '@/utils/trpc';
-import { LoginUserInput, loginUserSchema } from '@/schema/user.schema';
+import { CreateUserInput, createUserSchema } from '@/schema/user.schema';
 import { HOME } from '@/constants/pages';
 
-export default function Login() {
+export default function Register() {
   const [isLoading, setLoading] = useState(false);
   const [isSuccess, setSuccess] = useState(false);
-  const { mutateAsync, isError, error } = trpc.user.loginUser.useMutation();
+  const { mutateAsync, isError, error } = trpc.user.registerUser.useMutation();
+  console.log({ error });
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginUserInput>({
-    resolver: zodResolver(loginUserSchema),
+  } = useForm<CreateUserInput>({
+    resolver: zodResolver(createUserSchema),
   });
 
-  const handleLogin: SubmitHandler<LoginUserInput> = async ({ email }) => {
+  const handleRegister: SubmitHandler<CreateUserInput> = async ({
+    email,
+    name,
+  }) => {
     setLoading(true);
     setSuccess(false);
 
     try {
-      const user = await mutateAsync({ email });
+      const user = await mutateAsync({ email, name });
       if (user) {
         const result = await signIn('email', {
           email,
@@ -50,7 +54,7 @@ export default function Login() {
     <div className="flex h-full">
       <div className="flex h-full w-full items-center justify-center p-8 lg:w-1/2">
         <div className="w-full max-w-sm rounded-md border p-4 shadow-md">
-          <h1 className="mb-2 text-lg font-medium">Login</h1>
+          <h1 className="mb-2 text-lg font-medium">Register</h1>
           {isError && (
             <p className="mb-2 text-red-500">
               {error.data?.zodError ? 'something bad happened' : error.message}
@@ -59,11 +63,11 @@ export default function Login() {
           {isLoading && <p className="mb-2 text-gray-500">Loading...</p>}
           {isSuccess && (
             <p className="mb-2 text-green-500">
-              Berhasil, kami telah mengirim login link ke emailmu.
+              Pendaftaran berhasil, silahkan cek email untuk verifikasi
             </p>
           )}
 
-          <form onSubmit={handleSubmit(handleLogin)}>
+          <form onSubmit={handleSubmit(handleRegister)}>
             <FormControl>
               <Label htmlFor="email">Email</Label>
               <TextInput
@@ -76,11 +80,23 @@ export default function Login() {
                 <FieldInfo type="error">{errors.email.message}</FieldInfo>
               )}
             </FormControl>
+            <FormControl>
+              <Label htmlFor="name">Name</Label>
+              <TextInput
+                invalid={Boolean(errors.name)}
+                id="name"
+                placeholder="john@example.com"
+                {...register('name')}
+              />
+              {errors.name?.message && (
+                <FieldInfo type="error">{errors.name.message}</FieldInfo>
+              )}
+            </FormControl>
             <button
               type="submit"
               className="mt-2 w-full rounded-md bg-blue-400 p-2 text-white"
             >
-              Login
+              Register
             </button>
           </form>
         </div>

@@ -8,29 +8,34 @@ import { HOME, LOGIN, REGISTER } from '@/constants/pages';
 export const pageAuth = (callback?: (ctx: GetServerSidePropsContext) => {}) => {
   return async (ctx: GetServerSidePropsContext) => {
     const session = await getServerSession(ctx.req, ctx.res, authOptions);
+    const publicPages = [LOGIN, REGISTER];
+    const isPublicPages = publicPages.includes(ctx.resolvedUrl);
 
-    if (!session) {
+    // check if user has NO session, and is going to protected page
+    // action -> redirect to LOGIN
+    if (!session && !isPublicPages) {
       return {
         redirect: {
           destination: LOGIN,
           permanent: false,
         },
       };
-    } else {
-      const nonAuthPage = [LOGIN, REGISTER];
-
-      if (nonAuthPage.includes(ctx.resolvedUrl)) {
-        return {
-          redirect: {
-            destination: HOME,
-            permanent: false,
-          },
-        };
-      }
     }
 
-    const { role } = session.user;
-    if (!PAGE_AUTH[role].includes(ctx.resolvedUrl)) {
+    // check if user has session, and is going to public page
+    // action -> redirect to HOME
+    if (session && isPublicPages) {
+      return {
+        redirect: {
+          destination: HOME,
+          permanent: false,
+        },
+      };
+    }
+
+    // check if user has session, but their role doesn match page to visit
+    // action -> redirect to 404
+    if (session && !PAGE_AUTH[session.user.role].includes(ctx.resolvedUrl)) {
       return {
         notFound: true,
       };

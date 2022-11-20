@@ -1,17 +1,13 @@
 import { router, publicProcedure, protectedProcedure } from '../trpc';
-import { createUserSchema, loginUserSchema } from '@/schema/user.schema';
+import {
+  createUserSchema,
+  getUserDataSchema,
+  loginUserSchema,
+} from '@/schema/user.schema';
 import { TRPCError } from '@trpc/server';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 
 export const userRouter = router({
-  // dummyUser: publicProcedure
-  //   .input(createUserSchema)
-  //   .query(async ({ input, ctx }) => {
-  //     await ctx.prisma.user.deleteMany();
-  //     return {
-  //       message: `Hello ${input.name}!!!`,
-  //     };
-  //   }),
   loginUser: publicProcedure
     .input(loginUserSchema)
     .mutation(async ({ input, ctx }) => {
@@ -32,6 +28,14 @@ export const userRouter = router({
 
       return true;
     }),
+  /**
+   * This register flow support initial admin registration only
+   * later admin will create other accounts for his subordinates
+   * this flow useful if one application will be used by 1 company
+   *
+   * if want to provide more global registration,
+   * just remove the condition that check ADMIN_EMAIL data
+   */
   registerUser: publicProcedure
     .input(createUserSchema)
     .mutation(async ({ input, ctx }) => {
@@ -45,14 +49,15 @@ export const userRouter = router({
       }
 
       try {
-        const user = await ctx.prisma.user.create({
+        await ctx.prisma.user.create({
           data: {
             email,
             name,
+            role: 'ADMIN',
           },
         });
 
-        return user;
+        return true;
       } catch (error) {
         if (error instanceof PrismaClientKnownRequestError) {
           if (error.code === 'P2002') {
@@ -69,7 +74,22 @@ export const userRouter = router({
         });
       }
     }),
-  getMe: protectedProcedure.query(() => {
-    return 'name';
-  }),
+  getMe: protectedProcedure
+    .input(getUserDataSchema)
+    .query(async ({ input, ctx }) => {
+      const user = await ctx.prisma.user.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+
+      if (!user) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'User not found',
+        });
+      }
+
+      return user;
+    }),
 });

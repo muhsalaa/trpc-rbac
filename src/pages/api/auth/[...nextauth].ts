@@ -32,7 +32,6 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: '/auth/login',
-    // signOut: "/auth/logout",
   },
   session: {
     maxAge: 10 * 24 * 60 * 60,
