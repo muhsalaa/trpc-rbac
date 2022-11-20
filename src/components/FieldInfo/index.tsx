@@ -1,11 +1,11 @@
 import { HTMLAttributes } from 'react';
 import clsx from 'clsx';
 
-type FieldInfoAttributes = HTMLAttributes<HTMLSpanElement> & {
+type FieldInfoProps = HTMLAttributes<HTMLSpanElement> & {
   type?: 'error' | 'notes';
 };
 
-export const FieldInfo: React.FC<FieldInfoAttributes> = ({
+export const FieldInfo: React.FC<FieldInfoProps> = ({
   className,
   children,
   type,

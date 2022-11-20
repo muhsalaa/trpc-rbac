@@ -32,6 +32,11 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
+"@hookform/resolvers@^2.9.10":
+  version "2.9.10"
+  resolved "https://registry.yarnpkg.com/@hookform/resolvers/-/resolvers-2.9.10.tgz#e7e88942ee34e97b7bc937b0be4694194c9cd420"
+  integrity sha512-JIL1DgJIlH9yuxcNGtyhsWX/PgNltz+5Gr6+8SX9fhXc/hPbEIk6wPI82nhgvp3uUb6ZfAM5mqg/x7KR7NAb+A==
+
 "@humanwhocodes/config-array@^0.11.6":
   version "0.11.7"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.11.7.tgz#38aec044c6c828f6ed51d5d7ae3d9b9faf6dbb0f"
@@ -1965,6 +1970,11 @@ react-dom@18.2.0:
   dependencies:
     loose-envify "^1.1.0"
     scheduler "^0.23.0"
+
+react-hook-form@^7.39.4:
+  version "7.39.4"
+  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-7.39.4.tgz#7d9edf4e778a0cec4383f0119cd0699e3826a14a"
+  integrity sha512-B0e78r9kR9L2M4A4AXGbHoA/vyv34sB/n8QWJAw33TFz8f5t9helBbYAeqnbvcQf1EYzJxKX/bGQQh9K+evCyQ==
 
 react-is@^16.13.1:
   version "16.13.1"

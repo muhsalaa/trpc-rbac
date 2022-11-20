@@ -3,6 +3,7 @@ import { unstable_getServerSession as getServerSession } from 'next-auth';
 import { authOptions } from '@/pages/api/auth/[...nextauth]';
 import { PAGE_AUTH } from '@/constants/role';
 import { GetServerSidePropsContext } from 'next';
+import { HOME, LOGIN, REGISTER } from '@/constants/pages';
 
 export const pageAuth = (callback?: (ctx: GetServerSidePropsContext) => {}) => {
   return async (ctx: GetServerSidePropsContext) => {
@@ -11,10 +12,21 @@ export const pageAuth = (callback?: (ctx: GetServerSidePropsContext) => {}) => {
     if (!session) {
       return {
         redirect: {
-          destination: '/auth/login',
+          destination: LOGIN,
           permanent: false,
         },
       };
+    } else {
+      const nonAuthPage = [LOGIN, REGISTER];
+
+      if (nonAuthPage.includes(ctx.resolvedUrl)) {
+        return {
+          redirect: {
+            destination: HOME,
+            permanent: false,
+          },
+        };
+      }
     }
 
     const { role } = session.user;

@@ -1,3 +1,5 @@
+import { HOME, MANAGE_USER, PROFILES, SETTINGS } from './pages';
+
 export const ROLES = {
   ADMIN: 'ADMIN',
   MAINTAINER: 'MAINTAINER',
@@ -5,7 +7,7 @@ export const ROLES = {
 };
 
 export const PAGE_AUTH = {
-  [ROLES.ADMIN]: ['/home', '/manage-user', '/profiles', '/settings'],
-  [ROLES.MAINTAINER]: ['/home', '/manage-user', '/profiles'],
-  [ROLES.USER]: ['/home', '/profiles'],
+  [ROLES.ADMIN]: [HOME, MANAGE_USER, PROFILES, SETTINGS],
+  [ROLES.MAINTAINER]: [HOME, MANAGE_USER, PROFILES],
+  [ROLES.USER]: [HOME, PROFILES],
 };

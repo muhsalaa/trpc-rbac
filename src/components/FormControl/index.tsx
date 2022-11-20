@@ -9,7 +9,7 @@ export const FormControl: React.FC<FormControlAttributes> = ({
   ...props
 }) => {
   return (
-    <div className={clsx('mb-2 p-2', className)} {...props}>
+    <div className={clsx('mb-2', className)} {...props}>
       {children}
     </div>
   );

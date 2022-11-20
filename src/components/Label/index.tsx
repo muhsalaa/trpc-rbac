@@ -1,11 +1,11 @@
 import { LabelHTMLAttributes } from 'react';
 import clsx from 'clsx';
 
-type LabelAttributes = LabelHTMLAttributes<HTMLLabelElement> & {
+type LabelProps = LabelHTMLAttributes<HTMLLabelElement> & {
   required?: boolean;
 };
 
-export const Label: React.FC<LabelAttributes> = ({
+export const Label: React.FC<LabelProps> = ({
   className,
   required,
   ...props

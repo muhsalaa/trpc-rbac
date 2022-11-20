@@ -29,14 +29,9 @@ export const authOptions: NextAuthOptions = {
 
       return session;
     },
-    async signIn({ user }) {
-      console.log(user);
-
-      return true;
-    },
   },
   pages: {
-    // signIn: "/auth/login",
+    signIn: '/auth/login',
     // signOut: "/auth/logout",
   },
   session: {
