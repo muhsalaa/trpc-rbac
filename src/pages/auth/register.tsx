@@ -10,6 +10,7 @@ import { Alert } from '@/components/atoms/Alert';
 import { Label } from '@/components/atoms/Label';
 import { FieldInfo } from '@/components/atoms/FieldInfo';
 import { ErrorAlert } from '@/components/molecules/ErrorAlert';
+
 import { pageAuth } from '@/utils/pageAuth';
 import { getBaseUrl, trpc } from '@/utils/trpc';
 import { CreateUserInput, createUserSchema } from '@/schema/user.schema';

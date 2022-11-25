@@ -10,7 +10,9 @@ import { Button } from '@/components/atoms/Button';
 import { Spinner } from '@/components/atoms/Spinner';
 import { Alert } from '@/components/atoms/Alert';
 import { FieldInfo } from '@/components/atoms/FieldInfo';
+
 import { pageAuth } from '@/utils/pageAuth';
+import { useTimeCounter } from '@/hooks/useCountdown';
 import { getBaseUrl, trpc } from '@/utils/trpc';
 import { LoginUserInput, loginUserSchema } from '@/schema/user.schema';
 import { HOME } from '@/constants/pages';
@@ -19,19 +21,29 @@ import { ErrorAlert } from '@/components/molecules/ErrorAlert';
 export default function Login() {
   const [isLoading, setLoading] = useState(false);
   const [isSuccess, setSuccess] = useState(false);
+  const [isWaiting, setWaiting] = useState(false);
   const { mutateAsync, isError, error } = trpc.user.loginUser.useMutation();
+
+  const { startTimer, timer } = useTimeCounter({
+    manual: true,
+    onEnd: () => {
+      setWaiting(false);
+    },
+    duration: 60,
+  });
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<LoginUserInput>({
     resolver: zodResolver(loginUserSchema),
   });
 
   const handleLogin: SubmitHandler<LoginUserInput> = async ({ email }) => {
     // guard html modification via devtools
-    if (isLoading) {
+    if (isLoading || isWaiting) {
       return;
     }
 
@@ -48,6 +60,9 @@ export default function Login() {
         });
 
         setSuccess(Boolean(result?.ok));
+        setWaiting(true);
+        startTimer();
+        reset();
       }
     } catch (err) {
     } finally {
@@ -81,10 +96,21 @@ export default function Login() {
                 <FieldInfo type="error">{errors.email.message}</FieldInfo>
               )}
             </FormControl>
-            <Button type="submit" block className="mt-4" disabled={isLoading}>
+            <Button
+              type="submit"
+              block
+              className="mt-4"
+              disabled={isLoading || isWaiting}
+            >
               Login
             </Button>
           </form>
+
+          {isWaiting && (
+            <FieldInfo type="notes" className="mt-2">
+              Belum menerima email? Kirim ulang dalam {timer} detik
+            </FieldInfo>
+          )}
         </div>
       </div>
       <div className="hidden h-full bg-gradient-to-t from-green-300 via-blue-500 to-purple-600 lg:block lg:w-1/2"></div>
