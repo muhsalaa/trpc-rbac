@@ -1,5 +1,5 @@
 import { HTMLAttributes } from 'react';
-import clsx from 'clsx';
+import { cx } from 'class-variance-authority';
 
 type FormControlAttributes = HTMLAttributes<HTMLDivElement>;
 
@@ -9,7 +9,7 @@ export const FormControl: React.FC<FormControlAttributes> = ({
   ...props
 }) => {
   return (
-    <div className={clsx('mb-2', className)} {...props}>
+    <div className={cx('mb-2', className)} {...props}>
       {children}
     </div>
   );

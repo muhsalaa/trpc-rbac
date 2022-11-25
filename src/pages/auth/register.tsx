@@ -3,20 +3,23 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
 
-import { FormControl } from '@/components/FormControl';
-import { TextInput } from '@/components/TextInput';
-import { Label } from '@/components/Label';
-import { FieldInfo } from '@/components/FieldInfo';
+import { FormControl } from '@/components/atoms/FormControl';
+import { TextInput } from '@/components/atoms/TextInput';
+import { Button } from '@/components/atoms/Button';
+import { Alert } from '@/components/atoms/Alert';
+import { Label } from '@/components/atoms/Label';
+import { FieldInfo } from '@/components/atoms/FieldInfo';
+import { ErrorAlert } from '@/components/molecules/ErrorAlert';
 import { pageAuth } from '@/utils/pageAuth';
 import { getBaseUrl, trpc } from '@/utils/trpc';
 import { CreateUserInput, createUserSchema } from '@/schema/user.schema';
 import { HOME } from '@/constants/pages';
+import { Spinner } from '@/components/atoms/Spinner';
 
 export default function Register() {
   const [isLoading, setLoading] = useState(false);
   const [isSuccess, setSuccess] = useState(false);
   const { mutateAsync, isError, error } = trpc.user.registerUser.useMutation();
-  console.log({ error });
 
   const {
     register,
@@ -30,6 +33,11 @@ export default function Register() {
     email,
     name,
   }) => {
+    // guard html modification via devtools
+    if (isLoading) {
+      return;
+    }
+
     setLoading(true);
     setSuccess(false);
 
@@ -55,16 +63,12 @@ export default function Register() {
       <div className="flex h-full w-full items-center justify-center p-8 lg:w-1/2">
         <div className="w-full max-w-sm rounded-md border p-4 shadow-md">
           <h1 className="mb-2 text-lg font-medium">Register</h1>
-          {isError && (
-            <p className="mb-2 text-red-500">
-              {error.data?.zodError ? 'something bad happened' : error.message}
-            </p>
-          )}
-          {isLoading && <p className="mb-2 text-gray-500">Loading...</p>}
+          {isError && <ErrorAlert errors={error} className="mb-2" />}
+          {isLoading && <Spinner />}
           {isSuccess && (
-            <p className="mb-2 text-green-500">
-              Pendaftaran berhasil, silahkan cek email untuk verifikasi
-            </p>
+            <Alert className="mb-2" color="success">
+              Pendaftaran berhasil. Silahkan cek email untuk verifikasi
+            </Alert>
           )}
 
           <form onSubmit={handleSubmit(handleRegister)}>
@@ -85,23 +89,20 @@ export default function Register() {
               <TextInput
                 invalid={Boolean(errors.name)}
                 id="name"
-                placeholder="john@example.com"
+                placeholder="John Doe"
                 {...register('name')}
               />
               {errors.name?.message && (
                 <FieldInfo type="error">{errors.name.message}</FieldInfo>
               )}
             </FormControl>
-            <button
-              type="submit"
-              className="mt-2 w-full rounded-md bg-blue-400 p-2 text-white"
-            >
+            <Button type="submit" block className="mt-4" disabled={isLoading}>
               Register
-            </button>
+            </Button>
           </form>
         </div>
       </div>
-      <div className="hidden h-full bg-black lg:block lg:w-1/2"></div>
+      <div className="hidden h-full bg-gradient-to-t from-green-300 via-blue-500 to-purple-600 lg:block lg:w-1/2"></div>
     </div>
   );
 }

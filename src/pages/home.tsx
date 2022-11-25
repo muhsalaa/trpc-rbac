@@ -1,15 +1,13 @@
 import { useSession } from 'next-auth/react';
 
-import { TextInput } from '@/components/TextInput';
-import { Label } from '@/components/Label';
-import { FormControl } from '@/components/FormControl';
-import { FieldInfo } from '@/components/FieldInfo';
+import { TextInput } from '@/components/atoms/TextInput';
+import { Label } from '@/components/atoms/Label';
+import { FormControl } from '@/components/atoms/FormControl';
+import { FieldInfo } from '@/components/atoms/FieldInfo';
 import { pageAuth } from '@/utils/pageAuth';
 
 export default function Home() {
   const { data: sessionData } = useSession();
-
-  console.log(sessionData);
 
   return (
     <div className="p-8">

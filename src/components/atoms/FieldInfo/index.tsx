@@ -1,5 +1,6 @@
 import { HTMLAttributes } from 'react';
-import clsx from 'clsx';
+
+import { cx } from 'class-variance-authority';
 
 type FieldInfoProps = HTMLAttributes<HTMLSpanElement> & {
   type?: 'error' | 'notes';
@@ -13,10 +14,10 @@ export const FieldInfo: React.FC<FieldInfoProps> = ({
 }) => {
   return (
     <span
-      className={clsx(
+      className={cx(
         'mt-1 block text-xs',
-        type === 'error' && 'text-red-500',
-        type === 'notes' && 'text-gray-500',
+        type === 'error' ? 'text-red-500' : '',
+        type === 'notes' ? 'text-gray-500' : '',
         className
       )}
       {...props}
