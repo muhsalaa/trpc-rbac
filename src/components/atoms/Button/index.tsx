@@ -18,7 +18,7 @@ const cButton = cva(
         primary: ['bg-indigo-600', 'hover:bg-indigo-700', 'text-white'],
         warning: ['bg-orange-600', 'hover:bg-orange-700', 'text-white'],
         success: ['bg-green-600', 'hover:bg-green-700', 'text-white'],
-        disabled: ['bg-neutral-400', 'text-neutral-100'],
+        disabled: ['bg-neutral-400', 'text-neutral-100', 'cursor-not-allowed'],
       },
       block: {
         true: 'w-full block',

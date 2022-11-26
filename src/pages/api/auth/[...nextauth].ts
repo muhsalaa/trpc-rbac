@@ -36,6 +36,7 @@ export const authOptions: NextAuthOptions = {
   session: {
     maxAge: 10 * 24 * 60 * 60,
   },
+  secret: process.env.SECRET,
 };
 
 export default NextAuth(authOptions);

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
@@ -18,18 +18,21 @@ import { LoginUserInput, loginUserSchema } from '@/schema/user.schema';
 import { HOME } from '@/constants/pages';
 import { ErrorAlert } from '@/components/molecules/ErrorAlert';
 
+const STORAGE_LOGIN_DELAY_KEY = 'ldpc';
+const DELAY_DURATION = 10;
+
 export default function Login() {
   const [isLoading, setLoading] = useState(false);
   const [isSuccess, setSuccess] = useState(false);
   const [isWaiting, setWaiting] = useState(false);
+  const [startedTime, setStartedTime] = useState(0);
   const { mutateAsync, isError, error } = trpc.user.loginUser.useMutation();
 
+  // create counter for delaying user submit another email after succeeded sent one
   const { startTimer, timer } = useTimeCounter({
     manual: true,
-    onEnd: () => {
-      setWaiting(false);
-    },
-    duration: 60,
+    onEnd: () => setWaiting(false),
+    duration: DELAY_DURATION,
   });
 
   const {
@@ -61,14 +64,54 @@ export default function Login() {
 
         setSuccess(Boolean(result?.ok));
         setWaiting(true);
-        startTimer();
         reset();
+
+        // start the countdown
+        // and set countdown started time
+        startTimer();
+        setStartedTime(Date.now());
       }
     } catch (err) {
     } finally {
       setLoading(false);
     }
   };
+
+  // callback to set timestamps into localstorage
+  // this triggered if user refresh or close tab.
+  const persistDelay = () => {
+    if (startedTime)
+      localStorage.setItem(
+        STORAGE_LOGIN_DELAY_KEY,
+        (startedTime + DELAY_DURATION * 1000).toString()
+      );
+  };
+
+  useEffect(() => {
+    const persistedCount = localStorage.getItem(STORAGE_LOGIN_DELAY_KEY);
+
+    if (persistedCount && !isWaiting) {
+      // get remainder seconds of login delay, minimum value is 0
+      const loginDelay = Math.max(
+        Math.ceil((parseInt(persistedCount) - Date.now()) / 1000),
+        0
+      );
+
+      if (loginDelay) {
+        setWaiting(true);
+        setSuccess(true);
+        startTimer(loginDelay);
+      } else {
+        localStorage.removeItem(STORAGE_LOGIN_DELAY_KEY);
+      }
+    }
+
+    window.addEventListener('beforeunload', persistDelay);
+
+    return () => {
+      window.removeEventListener('beforeunload', persistDelay);
+    };
+  }, [startedTime, isWaiting]);
 
   return (
     <div className="flex h-full">
@@ -106,7 +149,7 @@ export default function Login() {
             </Button>
           </form>
 
-          {isWaiting && (
+          {isSuccess && (
             <FieldInfo type="notes" className="mt-2">
               Belum menerima email? Kirim ulang dalam {timer} detik
             </FieldInfo>
