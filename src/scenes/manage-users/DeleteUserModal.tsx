@@ -6,7 +6,7 @@ import { RouterOutput } from '@/server/trpc/router/_app';
 type UserData = RouterOutput['user']['getMe'];
 
 interface DeleteUserModalProps {
-  handleDeleteUser: (id?: string) => void;
+  handleDeleteUser: (id: string) => void;
   open: boolean;
   close: () => void;
   userData?: UserData;
@@ -48,7 +48,7 @@ export const DeleteUserModal = ({
         <Button
           color="error"
           block
-          onClick={() => handleDeleteUser(userData?.id)}
+          onClick={() => handleDeleteUser(userData?.id!)}
         >
           Yes
         </Button>
