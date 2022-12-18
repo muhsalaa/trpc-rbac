@@ -22,7 +22,8 @@ export const DeleteUserModal = ({
     <Modal open={open} close={close} size="small">
       <h3 className="mb-1 text-xl font-bold">Delete User</h3>
       <p className="mb-4 text-neutral-600">
-        Are you sure you want to delete this user? This action can't be undone!
+        Are you sure you want to delete this user? This action can&apos;t be
+        undone!
       </p>
       <Alert color="neutral">
         <table>
