@@ -6,6 +6,8 @@ import {
 } from '@/schema/user.schema';
 import { TRPCError } from '@trpc/server';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import { ROLES } from '@/constants/role';
+import { Role } from '@prisma/client';
 
 export const userRouter = router({
   loginUser: publicProcedure
@@ -92,4 +94,28 @@ export const userRouter = router({
 
       return user;
     }),
+  getAllUser: protectedProcedure.query(async ({ ctx }) => {
+    const role = ctx.session.user.role;
+
+    if (role === ROLES.USER) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'Restricted content',
+      });
+    }
+
+    const users = await ctx.prisma.user.findMany(
+      role === ROLES.ADMIN
+        ? undefined
+        : {
+            where: {
+              role: {
+                not: ROLES.ADMIN as Role,
+              },
+            },
+          }
+    );
+
+    return users;
+  }),
 });

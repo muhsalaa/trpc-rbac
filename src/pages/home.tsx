@@ -4,14 +4,17 @@ import { TextInput } from '@/components/atoms/TextInput';
 import { Label } from '@/components/atoms/Label';
 import { FormControl } from '@/components/atoms/FormControl';
 import { FieldInfo } from '@/components/atoms/FieldInfo';
-import { pageAuth } from '@/utils/pageAuth';
+import { AppLayout } from '@/components/layout/App';
 
-export default function Home() {
+import { pageAuth } from '@/utils/pageAuth';
+import { NextPageWithLayout } from '@/types/page';
+
+const Home: NextPageWithLayout = () => {
   const { data: sessionData } = useSession();
 
   return (
     <div className="p-8">
-      <h1>{JSON.stringify(sessionData)}</h1>
+      <pre className="mb-8">{JSON.stringify(sessionData, null, '\t')}</pre>
       <FormControl>
         <Label htmlFor="name">Name</Label>
         <TextInput invalid id="name" name="name" placeholder="John Doe" />
@@ -28,6 +31,10 @@ export default function Home() {
       </FormControl>
     </div>
   );
-}
+};
+
+Home.getLayout = (page) => <AppLayout>{page}</AppLayout>;
+
+export default Home;
 
 export const getServerSideProps = pageAuth();

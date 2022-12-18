@@ -3,8 +3,6 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 const cButton = cva(
   [
-    'px-8',
-    'py-3',
     'inline-block',
     'text-sm',
     'font-medium',
@@ -16,17 +14,23 @@ const cButton = cva(
     variants: {
       color: {
         primary: ['bg-indigo-600', 'hover:bg-indigo-700', 'text-white'],
-        warning: ['bg-orange-600', 'hover:bg-orange-700', 'text-white'],
-        success: ['bg-green-600', 'hover:bg-green-700', 'text-white'],
+        warning: ['bg-amber-600', 'hover:bg-amber-700', 'text-white'],
+        error: ['bg-red-600', 'hover:bg-red-700', 'text-white'],
+        success: ['bg-emerald-600', 'hover:bg-emerald-700', 'text-white'],
         disabled: ['bg-neutral-400', 'text-neutral-100', 'cursor-not-allowed'],
       },
       block: {
         true: 'w-full block',
       },
+      shape: {
+        default: ['px-8', 'py-3'],
+        square: ['p-2'],
+      },
     },
     defaultVariants: {
       color: 'primary',
       block: false,
+      shape: 'default',
     },
   }
 );
@@ -40,6 +44,7 @@ export const Button: React.FC<ButtonProps> = ({
   color,
   block,
   disabled,
+  shape,
   ...props
 }) => {
   return (
@@ -48,6 +53,7 @@ export const Button: React.FC<ButtonProps> = ({
       className={cButton({
         color: disabled ? 'disabled' : color,
         block,
+        shape,
         className,
       })}
       {...props}

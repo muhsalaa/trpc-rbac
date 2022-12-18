@@ -16,5 +16,5 @@ export async function createContext({
 
   return { prisma, session };
 }
-
+// get return type of context
 export type Context = inferAsyncReturnType<typeof createContext>;

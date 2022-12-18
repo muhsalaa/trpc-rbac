@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { Role, Status } from '@prisma/client';
 
 // ================ CREATE USER SCHEMA ================
 export const createUserSchema = z
@@ -27,3 +28,15 @@ export const getUserDataSchema = z
   .required();
 
 export type GetUserDataInput = z.TypeOf<typeof getUserDataSchema>;
+
+// ================ EDIT USER SCHEMA ================
+export const editUserSchema = z
+  .object({
+    name: z.string().min(1, { message: 'Name must not be empty' }),
+    email: z.string().email(),
+    status: z.nativeEnum(Status),
+    role: z.nativeEnum(Role),
+  })
+  .required();
+
+export type EditUserInput = z.TypeOf<typeof editUserSchema>;

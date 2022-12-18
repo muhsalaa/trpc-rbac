@@ -1,7 +1,13 @@
 // import { trpc } from '@/utils/trpc';
-
-import { Alert } from '@/components/atoms/Alert';
+import { useState } from 'react';
 import { Button } from '@/components/atoms/Button';
+import { Card } from '@/components/atoms/Card';
+import { Modal } from '@/components/molecules/Modal';
+
+import {
+  RadioButton,
+  type RadioButtonProps,
+} from '@/components/molecules/RadioButton';
 
 export default function Home() {
   // const { data, error, isLoading } = trpc.user.dummyUser.useQuery(
@@ -12,26 +18,33 @@ export default function Home() {
   //     retry: 2,
   //   }
   // );
+  const [isOpen, setIsOpen] = useState(false);
+  const [color, setColor] = useState<RadioButtonProps['selectedValue']>();
   return (
     <div className="p-8">
       <h1 className="text-4xl font-bold">Welcome to Home</h1>
       <Button className="my-8 mb-20 mr-5 border-8 border-red-200">TEST</Button>
-      <Button color="success">TEST</Button>
-      <Button color="warning">TEST</Button>
-      <Button color="warning" disabled>
+      <Button color="success" onClick={() => setIsOpen(true)}>
         TEST
       </Button>
-      <Button block>TEST</Button>
-      <Alert className="my-4">TEST</Alert>
-      <Alert className="my-4" color="error">
-        TEST
-      </Alert>
-      <Alert className="my-4" color="warning">
-        TEST
-      </Alert>
-      <Alert className="my-4" color="success">
-        TEST
-      </Alert>
+      <Card>HAHA</Card>
+      <Card size="small">HAHA</Card>
+      <Card size="big">HAHA</Card>
+      <Modal open={isOpen} close={() => setIsOpen(false)}>
+        HAHAH
+      </Modal>
+      <RadioButton
+        className="mt-40"
+        setSelectedValue={setColor}
+        selectedValue={color}
+        options={[
+          { value: 'green', display: 'Green' },
+          { value: 'red', display: 'Red' },
+          { value: 'blue', display: 'Blue' },
+          { value: 'pink', display: 'Pink' },
+        ]}
+        name="warna"
+      />
     </div>
   );
 }

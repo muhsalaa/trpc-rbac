@@ -1,42 +1,49 @@
 import { HTMLAttributes } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 
-const cAlert = cva(
-  ['px-3', 'py-2', 'text-sm', 'rounded-md', 'border', 'border-opacity-20'],
+const cBadge = cva(
+  [
+    'px-2.5',
+    'py-0.5',
+    'inline-flex',
+    'items-center',
+    'justify-center',
+    'rounded-full',
+    'text-sm',
+  ],
   {
     variants: {
       color: {
-        primary: ['bg-indigo-100', 'text-indigo-700', 'border-indigo-700'],
         warning: ['bg-amber-100', 'text-amber-700', 'border-amber-700'],
         success: ['bg-emerald-100', 'text-emerald-700', 'border-emerald-700'],
-        neutral: ['bg-neutral-100', 'text-neutral-700', 'border-neutral-700'],
         error: ['bg-red-100', 'text-red-700', 'border-red-700'],
       },
     },
     defaultVariants: {
-      color: 'primary',
+      color: 'success',
     },
   }
 );
 
-export type AlertProps = HTMLAttributes<HTMLDivElement> &
-  VariantProps<typeof cAlert>;
+type BadgeVariants = VariantProps<typeof cBadge>;
+export type BadgeVariantsNonNull = Exclude<BadgeVariants['color'], null>;
+export type BadgeProps = HTMLAttributes<HTMLSpanElement> & BadgeVariants;
 
-export const Alert: React.FC<AlertProps> = ({
+export const Badge: React.FC<BadgeProps> = ({
   className,
   children,
   color,
   ...props
 }) => {
   return (
-    <div
-      className={cAlert({
+    <span
+      className={cBadge({
         color,
         className,
       })}
       {...props}
     >
       {children}
-    </div>
+    </span>
   );
 };

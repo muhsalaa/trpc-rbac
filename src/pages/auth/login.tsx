@@ -3,25 +3,28 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
 
-import { FormControl } from '@/components/atoms/FormControl';
-import { TextInput } from '@/components/atoms/TextInput';
-import { Label } from '@/components/atoms/Label';
-import { Button } from '@/components/atoms/Button';
-import { Spinner } from '@/components/atoms/Spinner';
 import { Alert } from '@/components/atoms/Alert';
+import { AuthLayout } from '@/components/layout/Auth';
+import { Button } from '@/components/atoms/Button';
+import { Card } from '@/components/atoms/Card';
+import { ErrorAlert } from '@/components/molecules/ErrorAlert';
+import { FormControl } from '@/components/atoms/FormControl';
 import { FieldInfo } from '@/components/atoms/FieldInfo';
+import { Label } from '@/components/atoms/Label';
+import { Spinner } from '@/components/atoms/Spinner';
+import { TextInput } from '@/components/atoms/TextInput';
 
 import { pageAuth } from '@/utils/pageAuth';
-import { useTimeCounter } from '@/hooks/useCountdown';
 import { getBaseUrl, trpc } from '@/utils/trpc';
+import { useTimeCounter } from '@/hooks/useCountdown';
+import { NextPageWithLayout } from '@/types/page';
 import { LoginUserInput, loginUserSchema } from '@/schema/user.schema';
 import { HOME } from '@/constants/pages';
-import { ErrorAlert } from '@/components/molecules/ErrorAlert';
 
 const STORAGE_LOGIN_DELAY_KEY = 'ldpc';
-const DELAY_DURATION = 10;
+const DELAY_DURATION = 60;
 
-export default function Login() {
+const Login: NextPageWithLayout = () => {
   const [isLoading, setLoading] = useState(false);
   const [isSuccess, setSuccess] = useState(false);
   const [isWaiting, setWaiting] = useState(false);
@@ -107,6 +110,7 @@ export default function Login() {
     }
 
     window.addEventListener('beforeunload', persistDelay);
+    window.addEventListener('focus', () => console.log(focus));
 
     return () => {
       window.removeEventListener('beforeunload', persistDelay);
@@ -114,51 +118,50 @@ export default function Login() {
   }, [startedTime, isWaiting]);
 
   return (
-    <div className="flex h-full">
-      <div className="flex h-full w-full items-center justify-center p-8 lg:w-1/2">
-        <div className="w-full max-w-sm rounded-md border p-4 shadow-md">
-          <h1 className="mb-2 text-lg font-medium">Login</h1>
-          {isError && <ErrorAlert errors={error} className="mb-2" />}
-          {isLoading && <Spinner />}
-          {isSuccess && (
-            <Alert className="mb-2" color="success">
-              Berhasil, kami telah mengirim login link ke emailmu.
-            </Alert>
-          )}
+    <Card size="small">
+      <h1 className="mb-2 text-lg font-medium">Login</h1>
+      {isError && <ErrorAlert errors={error} className="mb-2" />}
+      {isLoading && <Spinner />}
+      {isSuccess && (
+        <Alert className="mb-2" color="success">
+          Berhasil, kami telah mengirim login link ke emailmu.
+        </Alert>
+      )}
 
-          <form onSubmit={handleSubmit(handleLogin)}>
-            <FormControl>
-              <Label htmlFor="email">Email</Label>
-              <TextInput
-                invalid={Boolean(errors.email)}
-                id="email"
-                placeholder="john@example.com"
-                {...register('email')}
-              />
-              {errors.email?.message && (
-                <FieldInfo type="error">{errors.email.message}</FieldInfo>
-              )}
-            </FormControl>
-            <Button
-              type="submit"
-              block
-              className="mt-4"
-              disabled={isLoading || isWaiting}
-            >
-              Login
-            </Button>
-          </form>
-
-          {isSuccess && (
-            <FieldInfo type="notes" className="mt-2">
-              Belum menerima email? Kirim ulang dalam {timer} detik
-            </FieldInfo>
+      <form onSubmit={handleSubmit(handleLogin)}>
+        <FormControl>
+          <Label htmlFor="email">Email</Label>
+          <TextInput
+            invalid={Boolean(errors.email)}
+            id="email"
+            placeholder="john@example.com"
+            {...register('email')}
+          />
+          {errors.email?.message && (
+            <FieldInfo type="error">{errors.email.message}</FieldInfo>
           )}
-        </div>
-      </div>
-      <div className="hidden h-full bg-gradient-to-t from-green-300 via-blue-500 to-purple-600 lg:block lg:w-1/2"></div>
-    </div>
+        </FormControl>
+        <Button
+          type="submit"
+          block
+          className="mt-4"
+          disabled={isLoading || isWaiting}
+        >
+          Login
+        </Button>
+      </form>
+
+      {isSuccess && (
+        <FieldInfo type="notes" className="mt-2">
+          Belum menerima email? Kirim ulang dalam {timer} detik
+        </FieldInfo>
+      )}
+    </Card>
   );
-}
+};
+
+Login.getLayout = (page) => <AuthLayout>{page}</AuthLayout>;
+
+export default Login;
 
 export const getServerSideProps = pageAuth();

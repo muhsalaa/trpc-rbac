@@ -1,19 +1,22 @@
-import { LabelHTMLAttributes } from 'react';
 import { cx } from 'class-variance-authority';
 
-type LabelProps = LabelHTMLAttributes<HTMLLabelElement> & {
+type LabelProps<C extends React.ElementType> = {
   required?: boolean;
-};
+  as?: C;
+} & React.ComponentPropsWithoutRef<C>;
 
-export const Label: React.FC<LabelProps> = ({
+export const Label = <C extends React.ElementType = 'label'>({
   className,
   required,
+  as,
   ...props
-}) => {
+}: LabelProps<C>) => {
+  const Component = as || 'label';
+
   return (
-    <label
+    <Component
       className={cx(
-        'mb-1 block text-sm font-medium text-gray-700',
+        'mb-1 block text-left text-sm font-medium text-gray-700',
         required ? "after:text-red-700 after:content-['*']" : '',
         className
       )}
