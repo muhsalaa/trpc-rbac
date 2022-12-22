@@ -27,22 +27,24 @@ export const DeleteUserModal = ({
       </p>
       <Alert color="neutral">
         <table>
-          <tr>
-            <td>Name</td>
-            <td>: {userData?.name}</td>
-          </tr>
-          <tr>
-            <td>Email</td>
-            <td>: {userData?.email}</td>
-          </tr>
-          <tr>
-            <td>Role</td>
-            <td>: {userData?.role}</td>
-          </tr>
-          <tr>
-            <td>Status</td>
-            <td>: {userData?.status}</td>
-          </tr>
+          <tbody>
+            <tr>
+              <td>Name</td>
+              <td>: {userData?.name}</td>
+            </tr>
+            <tr>
+              <td>Email</td>
+              <td>: {userData?.email}</td>
+            </tr>
+            <tr>
+              <td>Role</td>
+              <td>: {userData?.role}</td>
+            </tr>
+            <tr>
+              <td>Status</td>
+              <td>: {userData?.status}</td>
+            </tr>
+          </tbody>
         </table>
       </Alert>
       <div className="mt-8 flex gap-2">

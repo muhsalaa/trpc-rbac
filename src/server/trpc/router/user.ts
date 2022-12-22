@@ -7,7 +7,7 @@ import {
 import { TRPCError } from '@trpc/server';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { ROLES } from '@/constants/role';
-import { Role } from '@prisma/client';
+import { Role, Status } from '@prisma/client';
 
 export const userRouter = router({
   loginUser: publicProcedure
@@ -25,6 +25,14 @@ export const userRouter = router({
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'User not found',
+        });
+      }
+
+      if (user.status === Status.BANNED) {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message:
+            'Your account is temporary unable to login, please contact your supervisor.',
         });
       }
 

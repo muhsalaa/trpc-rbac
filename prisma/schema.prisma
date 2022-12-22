@@ -64,4 +64,5 @@ enum Status {
   ACTIVE
   BANNED
   WARNING
+  NEW
 }

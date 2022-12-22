@@ -1,7 +1,7 @@
 import { HTMLAttributes } from 'react';
 import { cx } from 'class-variance-authority';
 import { Card, type CardVariants } from '@/components/atoms/Card';
-import { HiXMark } from 'react-icons/hi2';
+import { FiX } from 'react-icons/fi';
 
 export type ModalProps = HTMLAttributes<HTMLDivElement> & {
   size?: CardVariants['size'];
@@ -50,7 +50,7 @@ export const Modal: React.FC<ModalProps> = ({
           {withCloseButton && (
             <div className="flex w-full">
               <button className="ml-auto" onClick={close}>
-                <HiXMark className="text-2xl" />
+                <FiX className="text-2xl" />
               </button>
             </div>
           )}

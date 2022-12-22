@@ -1,11 +1,6 @@
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
-import {
-  HiOutlineChevronUp,
-  HiOutlinePencilSquare,
-  HiOutlineTrash,
-  HiUserPlus,
-} from 'react-icons/hi2';
+import { FiChevronUp, FiEdit3, FiTrash2, FiUserPlus } from 'react-icons/fi';
 
 import { AppLayout } from '@/components/layout/App';
 import { Button } from '@/components/atoms/Button';
@@ -64,7 +59,7 @@ const ManageUser: NextPageWithLayout = () => {
           <TR>
             <TH>
               <div className="flex items-center gap-2">
-                ID <HiOutlineChevronUp />
+                ID <FiChevronUp />
               </div>
             </TH>
             <TH>Name</TH>
@@ -77,7 +72,7 @@ const ManageUser: NextPageWithLayout = () => {
                 color="success"
                 onClick={() => setOpenModalCreateUser(true)}
               >
-                <HiUserPlus />
+                <FiUserPlus />
               </Button>
             </TH>
           </TR>
@@ -102,14 +97,14 @@ const ManageUser: NextPageWithLayout = () => {
                       shape="square"
                       onClick={() => openEditUserModal(user)}
                     >
-                      <HiOutlinePencilSquare />
+                      <FiEdit3 />
                     </Button>
                     <Button
                       shape="square"
                       color="error"
                       onClick={() => openDeleteUserModal(user)}
                     >
-                      <HiOutlineTrash />
+                      <FiTrash2 />
                     </Button>
                   </div>
                 )}

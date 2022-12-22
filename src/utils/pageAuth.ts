@@ -8,8 +8,10 @@ import { HOME, LOGIN, REGISTER } from '@/constants/pages';
 export const pageAuth = (callback?: (ctx: GetServerSidePropsContext) => {}) => {
   return async (ctx: GetServerSidePropsContext) => {
     const session = await getServerSession(ctx.req, ctx.res, authOptions);
+
     const publicPages = [LOGIN, REGISTER];
-    const isPublicPages = publicPages.includes(ctx.resolvedUrl);
+    const currentUrl = ctx.resolvedUrl.split('?')[0];
+    const isPublicPages = publicPages.includes(currentUrl);
 
     // check if user has NO session, and is going to protected page
     // action -> redirect to LOGIN

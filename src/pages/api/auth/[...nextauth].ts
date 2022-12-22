@@ -3,6 +3,7 @@ import EmailProvider from 'next-auth/providers/email';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 
 import { prisma } from '@/server/db/client';
+import { Status } from '@prisma/client';
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -29,9 +30,31 @@ export const authOptions: NextAuthOptions = {
 
       return session;
     },
+    async signIn({ user }) {
+      if (user.status === Status.NEW) {
+        await prisma.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            status: Status.ACTIVE,
+          },
+        });
+
+        return true;
+      }
+
+      if (user.status === Status.BANNED) {
+        // todos: create page for banned user
+        return false;
+      }
+
+      return true;
+    },
   },
   pages: {
     signIn: '/auth/login',
+    verifyRequest: '/auth/verify-request',
   },
   session: {
     maxAge: 10 * 24 * 60 * 60,

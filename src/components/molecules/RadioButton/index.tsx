@@ -1,7 +1,7 @@
 import { cx } from 'class-variance-authority';
 
 import { Dispatch } from 'react';
-import { HiCheckCircle } from 'react-icons/hi2';
+import { FiCheckCircle } from 'react-icons/fi';
 
 export type RadioButtonProps<C = string | undefined> = {
   selectedValue: C;
@@ -51,7 +51,7 @@ export const RadioButton = <C = string | undefined,>({
             htmlFor={item.value}
             className="flex cursor-pointer items-center justify-center gap-2 rounded-md border border-gray-200 bg-white py-2 px-3 text-gray-900 hover:border-gray-300 peer-checked:border-indigo-600 peer-checked:bg-indigo-600 peer-checked:text-white"
           >
-            <HiCheckCircle className="hidden h-5 w-5" />
+            <FiCheckCircle className="hidden h-4 w-4" />
             <p className="text-sm font-medium">{item.display}</p>
           </label>
         </div>
