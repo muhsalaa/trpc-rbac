@@ -1,5 +1,6 @@
 import { ButtonHTMLAttributes } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
+import { FiLoader } from 'react-icons/fi';
 
 const cButton = cva(
   [
@@ -9,6 +10,7 @@ const cButton = cva(
     'rounded-md',
     'flex',
     'justify-center',
+    'items-center',
   ],
   {
     variants: {
@@ -36,7 +38,7 @@ const cButton = cva(
 );
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
-  VariantProps<typeof cButton> & {};
+  VariantProps<typeof cButton> & { activated?: boolean };
 
 export const Button: React.FC<ButtonProps> = ({
   className,
@@ -44,6 +46,7 @@ export const Button: React.FC<ButtonProps> = ({
   color,
   block,
   disabled,
+  activated,
   shape,
   ...props
 }) => {
@@ -58,6 +61,7 @@ export const Button: React.FC<ButtonProps> = ({
       })}
       {...props}
     >
+      {activated && <FiLoader className="mr-2 animate-spin text-lg" />}
       {children}
     </button>
   );

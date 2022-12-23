@@ -47,6 +47,7 @@ export const DeleteUserModal = ({
           </tbody>
         </table>
       </Alert>
+
       <div className="mt-8 flex gap-2">
         <Button
           color="error"

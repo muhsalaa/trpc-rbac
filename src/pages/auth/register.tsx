@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signIn } from 'next-auth/react';
 
 import { FormControl } from '@/components/atoms/FormControl';
 import { TextInput } from '@/components/atoms/TextInput';
@@ -15,15 +14,16 @@ import { AuthLayout } from '@/components/layout/Auth';
 import { Spinner } from '@/components/atoms/Spinner';
 
 import { pageAuth } from '@/utils/pageAuth';
-import { getBaseUrl, trpc } from '@/utils/trpc';
+import { useCreateUser } from '@/hooks/useCreateUser';
 import { CreateUserInput, createUserSchema } from '@/schema/user.schema';
 import { NextPageWithLayout } from '@/types/page';
-import { HOME } from '@/constants/pages';
 
 const Register: NextPageWithLayout = () => {
-  const [isLoading, setLoading] = useState(false);
   const [isSuccess, setSuccess] = useState(false);
-  const { mutateAsync, isError, error } = trpc.user.registerUser.useMutation();
+
+  const { handleRegister, isLoading, error, isError } = useCreateUser({
+    onSuccess: () => setSuccess(true),
+  });
 
   const {
     register,
@@ -33,39 +33,10 @@ const Register: NextPageWithLayout = () => {
     resolver: zodResolver(createUserSchema),
   });
 
-  const handleRegister: SubmitHandler<CreateUserInput> = async ({
-    email,
-    name,
-  }) => {
-    // guard html modification via devtools
-    if (isLoading) {
-      return;
-    }
-
-    setLoading(true);
-    setSuccess(false);
-
-    try {
-      const user = await mutateAsync({ email, name });
-      if (user) {
-        const result = await signIn('email', {
-          email,
-          redirect: false,
-          callbackUrl: getBaseUrl() + HOME,
-        });
-
-        setSuccess(Boolean(result?.ok));
-      }
-    } catch (err) {
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <Card size="small">
       <h1 className="mb-2 text-lg font-medium">Register</h1>
-      {isError && <ErrorAlert errors={error} className="mb-2" />}
+      {isError && <ErrorAlert errors={error!} className="mb-2" />}
       {isLoading && <Spinner />}
       {isSuccess && (
         <Alert className="mb-2" color="success">

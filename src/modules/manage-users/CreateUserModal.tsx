@@ -1,7 +1,8 @@
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Button } from '@/components/atoms/Button';
+import { ErrorAlert } from '@/components/molecules/ErrorAlert';
 import { Modal } from '@/components/molecules/Modal';
 import { FieldInfo } from '@/components/atoms/FieldInfo';
 import { TextInput } from '@/components/atoms/TextInput';
@@ -9,18 +10,32 @@ import { FormControl } from '@/components/atoms/FormControl';
 import { Label } from '@/components/atoms/Label';
 
 import { CreateUserInput, createUserSchema } from '@/schema/user.schema';
+import { useCreateUser } from '@/hooks/useCreateUser';
 
 interface CreateUserModalProps {
-  submitCrateUser: SubmitHandler<CreateUserInput>;
+  onSuccess: () => void;
   open: boolean;
   close: () => void;
 }
 
 export const CreateUserModal = ({
-  submitCrateUser,
+  onSuccess,
   open,
   close,
 }: CreateUserModalProps) => {
+  const {
+    handleRegister,
+    isLoading,
+    error,
+    isError,
+    reset: resetError,
+  } = useCreateUser({
+    onSuccess: () => {
+      onSuccess();
+      close();
+    },
+  });
+
   const {
     register,
     handleSubmit,
@@ -31,17 +46,20 @@ export const CreateUserModal = ({
   });
 
   const closeModal = () => {
+    if (isLoading) return;
+    resetError();
     reset();
     close();
   };
 
   return (
-    <Modal open={open} close={closeModal} size="small">
+    <Modal open={open} close={closeModal} size="small" withCloseButton>
       <h3 className="mb-1 text-xl font-bold">Create User</h3>
-      <p className="mb-4 text-neutral-600">
+      <p className="mb-2 text-neutral-600">
         Input the new user data in the form below
       </p>
-      <form onSubmit={handleSubmit(submitCrateUser)}>
+      {isError && <ErrorAlert errors={error!} className="mb-4" />}
+      <form onSubmit={handleSubmit(handleRegister)}>
         <FormControl>
           <Label htmlFor="name">Name</Label>
           <TextInput
@@ -66,7 +84,12 @@ export const CreateUserModal = ({
             <FieldInfo type="error">{errors.email.message}</FieldInfo>
           )}
         </FormControl>
-        <Button className="ml-auto mt-8" type="submit">
+        <Button
+          className="ml-auto mt-8"
+          type="submit"
+          disabled={isLoading}
+          activated={isLoading}
+        >
           Submit
         </Button>
       </form>

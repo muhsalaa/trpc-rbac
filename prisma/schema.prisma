@@ -41,7 +41,7 @@ model User {
   emailVerified DateTime? @map("email_verified")
   image         String?
   role          Role      @default(USER)
-  status        Status    @default(ACTIVE)
+  status        Status    @default(NEW)
   accounts      Account[]
   sessions      Session[]
 }

@@ -30,13 +30,16 @@ export const authOptions: NextAuthOptions = {
 
       return session;
     },
-    async signIn({ user }) {
-      if (user.status === Status.NEW) {
+    async signIn({ user, email }) {
+      // signIn callback is called twice, when send verify request and when user verified
+      // condition below make sure only change user status to ACTIVE when user verified
+      if (user.status === Status.NEW && !email?.verificationRequest) {
         await prisma.user.update({
           where: {
             id: user.id,
           },
           data: {
+            // change user status to active if he verify his email
             status: Status.ACTIVE,
           },
         });
@@ -45,7 +48,7 @@ export const authOptions: NextAuthOptions = {
       }
 
       if (user.status === Status.BANNED) {
-        // todos: create page for banned user
+        // TODO: create page for banned user
         return false;
       }
 

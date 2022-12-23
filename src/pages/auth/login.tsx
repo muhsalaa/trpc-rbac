@@ -34,7 +34,10 @@ const Login: NextPageWithLayout = () => {
   // create counter for delaying user submit another email after succeeded sent one
   const { startTimer, timer } = useTimeCounter({
     manual: true,
-    onEnd: () => setWaiting(false),
+    onEnd: () => {
+      setWaiting(false);
+      setSuccess(false);
+    },
     duration: DELAY_DURATION,
   });
 

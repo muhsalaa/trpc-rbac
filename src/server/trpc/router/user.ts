@@ -50,11 +50,15 @@ export const userRouter = router({
     .input(createUserSchema)
     .mutation(async ({ input, ctx }) => {
       const { email, name } = input;
+      const userRole = ctx.session?.user?.role;
 
-      if (email !== process.env.ADMIN_EMAIL) {
+      // only allow registration if user role isnt USER and user email is ADMIN (initial user)
+      if (
+        userRole ? userRole === Role.USER : email !== process.env.ADMIN_EMAIL
+      ) {
         throw new TRPCError({
           code: 'FORBIDDEN',
-          message: 'Only admin can register new user',
+          message: 'Only admin and maintainer can register new user',
         });
       }
 
@@ -63,7 +67,7 @@ export const userRouter = router({
           data: {
             email,
             name,
-            role: 'ADMIN',
+            role: email === process.env.ADMIN_EMAIL ? Role.ADMIN : Role.USER,
           },
         });
 
