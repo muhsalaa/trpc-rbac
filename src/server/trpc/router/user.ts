@@ -1,6 +1,7 @@
 import { router, publicProcedure, protectedProcedure } from '../trpc';
 import {
   createUserSchema,
+  editUserSchema,
   getUserDataSchema,
   loginUserSchema,
 } from '@/schema/user.schema';
@@ -8,6 +9,7 @@ import { TRPCError } from '@trpc/server';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { ROLES } from '@/constants/role';
 import { Role, Status } from '@prisma/client';
+import { checkManageUserAuthorization } from '@/utils/authorization';
 
 export const userRouter = router({
   loginUser: publicProcedure
@@ -50,11 +52,11 @@ export const userRouter = router({
     .input(createUserSchema)
     .mutation(async ({ input, ctx }) => {
       const { email, name } = input;
-      const userRole = ctx.session?.user?.role;
+      const actorRole = ctx.session?.user?.role;
 
       // only allow registration if user role isnt USER and user email is ADMIN (initial user)
       if (
-        userRole ? userRole === Role.USER : email !== process.env.ADMIN_EMAIL
+        actorRole ? actorRole === Role.USER : email !== process.env.ADMIN_EMAIL
       ) {
         throw new TRPCError({
           code: 'FORBIDDEN',
@@ -112,7 +114,7 @@ export const userRouter = router({
     if (role === ROLES.USER) {
       throw new TRPCError({
         code: 'UNAUTHORIZED',
-        message: 'Restricted content',
+        message: 'You cant view this data.',
       });
     }
 
@@ -130,4 +132,40 @@ export const userRouter = router({
 
     return users;
   }),
+  editUser: protectedProcedure
+    .input(editUserSchema)
+    .mutation(async ({ input, ctx }) => {
+      const { id, ...data } = input;
+      const actorRole = ctx.session?.user?.role;
+      const targetUser = await ctx.prisma.user.findFirst({
+        where: {
+          id,
+        },
+      });
+
+      if (targetUser) {
+        const isAuthorizedToEdit = checkManageUserAuthorization(
+          actorRole,
+          targetUser.role
+        );
+        if (isAuthorizedToEdit) {
+          await ctx.prisma.user.update({
+            where: {
+              id,
+            },
+            data,
+          });
+        } else {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: 'You cant edit this user data.',
+          });
+        }
+      } else {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Something went wrong',
+        });
+      }
+    }),
 });

@@ -32,6 +32,7 @@ export type GetUserDataInput = z.TypeOf<typeof getUserDataSchema>;
 // ================ EDIT USER SCHEMA ================
 export const editUserSchema = z
   .object({
+    id: z.string().min(1, { message: 'Id must not be empty' }),
     name: z.string().min(1, { message: 'Name must not be empty' }),
     email: z.string().email(),
     status: z.nativeEnum(Status),
