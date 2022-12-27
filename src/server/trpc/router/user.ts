@@ -1,6 +1,7 @@
 import { router, publicProcedure, protectedProcedure } from '../trpc';
 import {
   createUserSchema,
+  deleteUserDataSchema,
   editUserSchema,
   getUserDataSchema,
   loginUserSchema,
@@ -137,7 +138,7 @@ export const userRouter = router({
     .mutation(async ({ input, ctx }) => {
       const { id, ...data } = input;
       const actorRole = ctx.session?.user?.role;
-      const targetUser = await ctx.prisma.user.findFirst({
+      const targetUser = await ctx.prisma.user.findUnique({
         where: {
           id,
         },
@@ -164,7 +165,42 @@ export const userRouter = router({
       } else {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Something went wrong',
+          message: 'User not found',
+        });
+      }
+    }),
+  deleteUser: protectedProcedure
+    .input(deleteUserDataSchema)
+    .mutation(async ({ input, ctx }) => {
+      const { id } = input;
+      const actorRole = ctx.session?.user?.role;
+      const targetUser = await ctx.prisma.user.findUnique({
+        where: {
+          id,
+        },
+      });
+
+      if (targetUser) {
+        const isAuthorizedToDelete = checkManageUserAuthorization(
+          actorRole,
+          targetUser.role
+        );
+        if (isAuthorizedToDelete) {
+          await ctx.prisma.user.delete({
+            where: {
+              id,
+            },
+          });
+        } else {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: 'You cant edit this user data.',
+          });
+        }
+      } else {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'User not found',
         });
       }
     }),

@@ -53,8 +53,13 @@ const ManageUser: NextPageWithLayout = () => {
     console.log(values);
   };
 
-  const handleDeleteUser = (id: string) => {
-    console.log(id);
+  const onSuccessDeleteUser = () => {
+    refetch();
+    setPopUpContent({
+      title: 'User deleted',
+      content: 'User successfully deleted.',
+    });
+    setPopUpShow(true);
   };
 
   const onSuccessCreateUser = () => {
@@ -144,8 +149,8 @@ const ManageUser: NextPageWithLayout = () => {
       />
       <DeleteUserModal
         userData={userData}
-        handleDeleteUser={handleDeleteUser}
         open={isOpenModalDeleteUser}
+        onSuccess={onSuccessDeleteUser}
         close={() => setOpenModalDeleteUser(false)}
       />
       <CreateUserModal

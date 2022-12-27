@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Button } from '@/components/atoms/Button';
 import { Card } from '@/components/atoms/Card';
 import { Modal } from '@/components/molecules/Modal';
+import Link from 'next/link';
 
 import {
   RadioButton,
@@ -24,6 +25,11 @@ export default function Home() {
     <div className="p-8">
       <h1 className="text-4xl font-bold">Welcome to Home</h1>
       <Button className="my-8 mb-20 mr-5 border-8 border-red-200">TEST</Button>
+      <Link href="/auth/login">
+        <Button className="my-8 mb-20 mr-5 border-8 border-red-200">
+          Login
+        </Button>
+      </Link>
       <Button color="success" onClick={() => setIsOpen(true)}>
         TEST
       </Button>

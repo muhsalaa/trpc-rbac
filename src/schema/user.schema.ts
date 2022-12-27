@@ -41,3 +41,8 @@ export const editUserSchema = z
   .required();
 
 export type EditUserInput = z.TypeOf<typeof editUserSchema>;
+
+// ================ DELETE USER DATA SCHEMA ================
+export const deleteUserDataSchema = getUserDataSchema;
+
+export type DeleteUserDataInput = GetUserDataInput;
