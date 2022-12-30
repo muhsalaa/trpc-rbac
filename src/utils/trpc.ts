@@ -1,8 +1,10 @@
 import SuperJSON from 'superjson';
-import { httpBatchLink, loggerLink } from '@trpc/client';
+import { httpBatchLink, loggerLink, TRPCClientError } from '@trpc/client';
 import { createTRPCNext } from '@trpc/next';
 
 import { AppRouter } from '@/server/trpc/router/_app';
+import { signOut } from 'next-auth/react';
+import { LOGIN } from '@/constants/pages';
 
 // == TODO: Add self deployment url ==
 export const getBaseUrl = () => {
@@ -29,6 +31,28 @@ export const trpc = createTRPCNext<AppRouter>({
     return {
       transformer: SuperJSON,
       links,
+      queryClientConfig: {
+        defaultOptions: {
+          queries: {
+            onError(error) {
+              if (error instanceof TRPCClientError) {
+                if (error.data.code === 'UNAUTHORIZED') {
+                  signOut({ callbackUrl: getBaseUrl() + LOGIN });
+                }
+              }
+            },
+          },
+          mutations: {
+            onError(error) {
+              if (error instanceof TRPCClientError) {
+                if (error.data.code === 'UNAUTHORIZED') {
+                  signOut({ callbackUrl: getBaseUrl() + LOGIN });
+                }
+              }
+            },
+          },
+        },
+      },
     };
   },
   ssr: false,

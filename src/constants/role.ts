@@ -11,7 +11,6 @@ export const ROLES = {
 export const ROLES_OPTIONS = [
   { value: 'USER', display: 'USER' },
   { value: 'MAINTAINER', display: 'MAINTAINER' },
-  { value: 'ADMIN', display: 'ADMIN' },
 ];
 
 export const PAGE_AUTH = {

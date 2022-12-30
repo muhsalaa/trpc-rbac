@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -10,7 +11,9 @@ import { FormControl } from '@/components/atoms/FormControl';
 import { Label } from '@/components/atoms/Label';
 
 import { CreateUserInput, createUserSchema } from '@/schema/user.schema';
-import { useCreateUser } from '@/hooks/useCreateUser';
+import { signIn } from 'next-auth/react';
+import { getBaseUrl, trpc } from '@/utils/trpc';
+import { HOME } from '@/constants/pages';
 
 interface CreateUserModalProps {
   onSuccess: () => void;
@@ -23,18 +26,40 @@ export const CreateUserModal = ({
   open,
   close,
 }: CreateUserModalProps) => {
+  const [isLoading, setLoading] = useState(false);
+
   const {
-    handleRegister,
-    isLoading,
-    error,
-    isError,
+    mutateAsync,
     reset: resetError,
-  } = useCreateUser({
-    onSuccess: () => {
-      onSuccess();
-      close();
-    },
-  });
+    isError,
+    error,
+  } = trpc.user.registerUser.useMutation();
+
+  const handleRegister = async ({ email, name }: CreateUserInput) => {
+    // guard html modification via devtools
+    if (isLoading) {
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const user = await mutateAsync({ email, name });
+      if (user) {
+        signIn('email', {
+          email,
+          redirect: false,
+          callbackUrl: getBaseUrl() + HOME,
+        });
+
+        onSuccess();
+        close();
+      }
+    } catch (err) {
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const {
     register,

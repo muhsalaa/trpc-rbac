@@ -14,16 +14,43 @@ import { AuthLayout } from '@/components/layout/Auth';
 import { Spinner } from '@/components/atoms/Spinner';
 
 import { pageAuth } from '@/utils/pageAuth';
-import { useCreateUser } from '@/hooks/useCreateUser';
 import { CreateUserInput, createUserSchema } from '@/schema/user.schema';
 import { NextPageWithLayout } from '@/types/page';
+import { signIn } from 'next-auth/react';
+import { getBaseUrl, trpc } from '@/utils/trpc';
+import { HOME } from '@/constants/pages';
 
 const Register: NextPageWithLayout = () => {
   const [isSuccess, setSuccess] = useState(false);
+  const [isLoading, setLoading] = useState(false);
 
-  const { handleRegister, isLoading, error, isError } = useCreateUser({
-    onSuccess: () => setSuccess(true),
-  });
+  const { mutateAsync, isError, error } =
+    trpc.user.registerFirstUser.useMutation();
+
+  const handleRegister = async ({ email, name }: CreateUserInput) => {
+    // guard html modification via devtools
+    if (isLoading) {
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const user = await mutateAsync({ email, name });
+      if (user) {
+        signIn('email', {
+          email,
+          redirect: false,
+          callbackUrl: getBaseUrl() + HOME,
+        });
+
+        setSuccess(true);
+      }
+    } catch (err) {
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const {
     register,

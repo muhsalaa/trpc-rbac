@@ -1,3 +1,4 @@
+import { Status } from '@prisma/client';
 import { initTRPC, TRPCError } from '@trpc/server';
 import SuperJSON from 'superjson';
 import { ZodError } from 'zod';
@@ -25,7 +26,12 @@ const t = initTRPC.context<Context>().create({
  * users are logged in
  */
 const isAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
+  if (
+    !ctx.session ||
+    !ctx.session.user ||
+    Status.BANNED === ctx.session.user.status ||
+    Status.NEW === ctx.session.user.status
+  ) {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
   return next({

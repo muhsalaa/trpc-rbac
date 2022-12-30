@@ -24,6 +24,7 @@ import { RouterOutput } from '@/server/trpc/router/_app';
 import { NextPageWithLayout } from '@/types/page';
 import { EditUserInput } from '@/schema/user.schema';
 import { STATUS_COLOR } from '@/constants/theme';
+import { Role, Status } from '@prisma/client';
 
 type UserOutput = RouterOutput['user']['getMe'];
 
@@ -121,12 +122,18 @@ const ManageUser: NextPageWithLayout = () => {
                   user.role
                 ) && (
                   <div className="flex gap-2">
-                    <Button
-                      shape="square"
-                      onClick={() => openEditUserModal(user)}
-                    >
-                      <FiEdit3 />
-                    </Button>
+                    {/* enable edit fro NEW user only for ADMIN role */}
+                    {!(
+                      user.status === Status.NEW &&
+                      sessionData!.user.role !== Role.ADMIN
+                    ) && (
+                      <Button
+                        shape="square"
+                        onClick={() => openEditUserModal(user)}
+                      >
+                        <FiEdit3 />
+                      </Button>
+                    )}
                     <Button
                       shape="square"
                       color="error"

@@ -9,6 +9,7 @@ import {
   RadioButton,
   type RadioButtonProps,
 } from '@/components/molecules/RadioButton';
+import { Dropdown } from '@/components/molecules/Dropdown';
 
 export default function Home() {
   // const { data, error, isLoading } = trpc.user.dummyUser.useQuery(
@@ -51,6 +52,7 @@ export default function Home() {
         ]}
         name="warna"
       />
+      <Dropdown />
     </div>
   );
 }

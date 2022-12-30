@@ -49,16 +49,13 @@ export const userRouter = router({
    * if want to provide more global registration,
    * just remove the condition that check ADMIN_EMAIL data
    */
-  registerUser: publicProcedure
+  registerFirstUser: publicProcedure
     .input(createUserSchema)
     .mutation(async ({ input, ctx }) => {
       const { email, name } = input;
-      const actorRole = ctx.session?.user?.role;
 
       // only allow registration if user role isnt USER and user email is ADMIN (initial user)
-      if (
-        actorRole ? actorRole === Role.USER : email !== process.env.ADMIN_EMAIL
-      ) {
+      if (email !== process.env.ADMIN_EMAIL) {
         throw new TRPCError({
           code: 'FORBIDDEN',
           message: 'Only admin and maintainer can register new user',
@@ -70,7 +67,47 @@ export const userRouter = router({
           data: {
             email,
             name,
-            role: email === process.env.ADMIN_EMAIL ? Role.ADMIN : Role.USER,
+            role: Role.ADMIN,
+          },
+        });
+
+        return true;
+      } catch (error) {
+        if (error instanceof PrismaClientKnownRequestError) {
+          if (error.code === 'P2002') {
+            throw new TRPCError({
+              code: 'CONFLICT',
+              message: 'User already exist',
+            });
+          }
+        }
+
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Something went wrong',
+        });
+      }
+    }),
+  registerUser: protectedProcedure
+    .input(createUserSchema)
+    .mutation(async ({ input, ctx }) => {
+      const { email, name } = input;
+      const actorRole = ctx.session?.user?.role;
+
+      // only allow registration if user role isnt USER and user email is ADMIN (initial user)
+      if (actorRole === Role.USER) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'Only admin and maintainer can register new user',
+        });
+      }
+
+      try {
+        await ctx.prisma.user.create({
+          data: {
+            email,
+            name,
+            role: Role.USER,
           },
         });
 
@@ -128,6 +165,9 @@ export const userRouter = router({
                 not: ROLES.ADMIN as Role,
               },
             },
+            orderBy: {
+              createdAt: 'asc',
+            },
           }
     );
 
@@ -149,12 +189,18 @@ export const userRouter = router({
           actorRole,
           targetUser.role
         );
+        const isEmailChanged = targetUser.email !== data.email;
+
         if (isAuthorizedToEdit) {
           await ctx.prisma.user.update({
             where: {
               id,
             },
-            data,
+            // change status to NEW when email is changed
+            data: {
+              ...data,
+              ...(isEmailChanged && { status: Status.NEW }),
+            },
           });
         } else {
           throw new TRPCError({

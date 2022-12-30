@@ -13,6 +13,7 @@ import { Label } from '@/components/atoms/Label';
 import { EditUserInput, editUserSchema } from '@/schema/user.schema';
 import { ROLES_OPTIONS } from '@/constants/role';
 import { USER_STATUS_OPTIONS } from '@/constants/user';
+import { Status } from '@prisma/client';
 
 interface EditUserModalProps {
   userData?: EditUserInput;
@@ -105,7 +106,14 @@ export const EditUserModal = ({
               <RadioButton
                 setSelectedValue={onChange}
                 selectedValue={value}
-                options={USER_STATUS_OPTIONS}
+                options={
+                  userData?.status === Status.NEW
+                    ? USER_STATUS_OPTIONS.concat({
+                        value: 'NEW',
+                        display: 'NEW',
+                      })
+                    : USER_STATUS_OPTIONS
+                }
                 name="status"
               />
             )}
