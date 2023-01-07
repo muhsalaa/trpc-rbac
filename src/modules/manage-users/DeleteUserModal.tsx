@@ -1,5 +1,6 @@
 import { Alert } from '@/components/atoms/Alert';
 import { Button } from '@/components/atoms/Button';
+import { ErrorAlert } from '@/components/molecules/ErrorAlert';
 import { Modal } from '@/components/molecules/Modal';
 
 import { RouterOutput } from '@/server/trpc/router/_app';
@@ -21,7 +22,8 @@ export const DeleteUserModal = ({
   userData,
   onSuccess,
 }: DeleteUserModalProps) => {
-  const { mutate, isLoading, isSuccess } = trpc.user.deleteUser.useMutation();
+  const { mutate, isLoading, isSuccess, error, isError } =
+    trpc.user.deleteUser.useMutation();
 
   const closeModal = () => {
     if (isLoading) return;
@@ -42,6 +44,7 @@ export const DeleteUserModal = ({
         Are you sure you want to delete this user? This action can&apos;t be
         undone!
       </p>
+      {isError && <ErrorAlert errors={error} className="mb-4" />}
       <Alert color="neutral">
         <table>
           <tbody>

@@ -29,6 +29,16 @@ export const getUserDataSchema = z
 
 export type GetUserDataInput = z.TypeOf<typeof getUserDataSchema>;
 
+// ================ GET USER DATA SCHEMA ================
+export const getAllUserDataSchema = z
+  .object({
+    page: z.number().min(1),
+    per_page: z.number().min(2),
+  })
+  .required();
+
+export type GetAllUserDataInput = z.TypeOf<typeof getAllUserDataSchema>;
+
 // ================ EDIT USER SCHEMA ================
 export const editUserSchema = z
   .object({

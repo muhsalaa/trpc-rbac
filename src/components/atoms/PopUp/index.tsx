@@ -50,7 +50,7 @@ export const PopUp = ({
     <div
       role="alert"
       className={cx(
-        'fixed top-20 left-0 right-0 px-4 transition-all duration-300 ease-in-out',
+        'fixed left-1/2 top-20 -translate-x-1/2 px-4 transition-all duration-300 ease-in-out',
         show
           ? 'opacity-1 pointer-events-auto top-20'
           : 'pointer-events-none top-4 opacity-0'

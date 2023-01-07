@@ -53,7 +53,7 @@ export const CreateUserModal = ({
         });
 
         onSuccess();
-        close();
+        closeModal();
       }
     } catch (err) {
     } finally {
@@ -83,7 +83,7 @@ export const CreateUserModal = ({
       <p className="mb-2 text-neutral-600">
         Input the new user data in the form below
       </p>
-      {isError && <ErrorAlert errors={error!} className="mb-4" />}
+      {isError && <ErrorAlert errors={error} className="mb-4" />}
       <form onSubmit={handleSubmit(handleRegister)}>
         <FormControl>
           <Label htmlFor="name">Name</Label>

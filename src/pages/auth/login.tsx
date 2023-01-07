@@ -113,7 +113,6 @@ const Login: NextPageWithLayout = () => {
     }
 
     window.addEventListener('beforeunload', persistDelay);
-    window.addEventListener('focus', () => console.log(focus));
 
     return () => {
       window.removeEventListener('beforeunload', persistDelay);

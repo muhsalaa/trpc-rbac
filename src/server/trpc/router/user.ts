@@ -5,6 +5,7 @@ import {
   editUserSchema,
   getUserDataSchema,
   loginUserSchema,
+  getAllUserDataSchema,
 } from '@/schema/user.schema';
 import { TRPCError } from '@trpc/server';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
@@ -146,33 +147,37 @@ export const userRouter = router({
 
       return user;
     }),
-  getAllUser: protectedProcedure.query(async ({ ctx }) => {
-    const role = ctx.session.user.role;
+  getAllUser: protectedProcedure
+    .input(getAllUserDataSchema)
+    .query(async ({ ctx, input }) => {
+      const role = ctx.session.user.role;
 
-    if (role === ROLES.USER) {
-      throw new TRPCError({
-        code: 'UNAUTHORIZED',
-        message: 'You cant view this data.',
+      if (role === ROLES.USER) {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'You cant view this data.',
+        });
+      }
+
+      const total = await ctx.prisma.user.count();
+      const users = await ctx.prisma.user.findMany({
+        where: {
+          role:
+            role === ROLES.ADMIN
+              ? undefined
+              : {
+                  not: ROLES.ADMIN as Role,
+                },
+        },
+        orderBy: {
+          createdAt: 'asc',
+        },
+        take: input.per_page,
+        skip: (input.page - 1) * input.per_page,
       });
-    }
 
-    const users = await ctx.prisma.user.findMany(
-      role === ROLES.ADMIN
-        ? undefined
-        : {
-            where: {
-              role: {
-                not: ROLES.ADMIN as Role,
-              },
-            },
-            orderBy: {
-              createdAt: 'asc',
-            },
-          }
-    );
-
-    return users;
-  }),
+      return { users, total };
+    }),
   editUser: protectedProcedure
     .input(editUserSchema)
     .mutation(async ({ input, ctx }) => {
@@ -199,7 +204,10 @@ export const userRouter = router({
             // change status to NEW when email is changed
             data: {
               ...data,
-              ...(isEmailChanged && { status: Status.NEW }),
+              ...(isEmailChanged && {
+                status: Status.NEW,
+                emailVerified: null,
+              }),
             },
           });
         } else {

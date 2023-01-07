@@ -21,27 +21,27 @@ export const PAGE_AUTH = {
 
 export const MENUS = {
   [ROLES.USER]: [
-    { icon: FiHome, path: HOME, display_name: 'Beranda' },
+    { icon: FiHome, path: HOME, display_name: 'Home' },
     { icon: FiUser, path: PROFILES, display_name: 'Profile' },
   ],
   [ROLES.MAINTAINER]: [
-    { icon: FiHome, path: HOME, display_name: 'Beranda' },
+    { icon: FiHome, path: HOME, display_name: 'Home' },
     {
       icon: FiUsers,
       path: MANAGE_USER,
-      display_name: 'Kelola Pengguna',
+      display_name: 'Manage User',
     },
     { icon: FiUser, path: PROFILES, display_name: 'Profile' },
   ],
   [ROLES.ADMIN]: [
-    { icon: FiHome, path: HOME, display_name: 'Beranda' },
+    { icon: FiHome, path: HOME, display_name: 'Home' },
     {
       icon: FiUsers,
       path: MANAGE_USER,
-      display_name: 'Kelola Pengguna',
+      display_name: 'Manage User',
     },
     { icon: FiUser, path: PROFILES, display_name: 'Profile' },
-    { icon: FiSettings, path: SETTINGS, display_name: 'Pengaturan' },
+    { icon: FiSettings, path: SETTINGS, display_name: 'Settings' },
   ],
 };
 

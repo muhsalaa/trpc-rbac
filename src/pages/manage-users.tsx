@@ -16,9 +16,11 @@ import { PopUp } from '@/components/atoms/PopUp';
 import { EditUserModal } from '@/modules/manage-users/EditUserModal';
 import { CreateUserModal } from '@/modules/manage-users/CreateUserModal';
 import { DeleteUserModal } from '@/modules/manage-users/DeleteUserModal';
+import { Pagination } from '@/components/atoms/Pagination';
 
 import { pageAuth } from '@/utils/pageAuth';
 import { trpc } from '@/utils/trpc';
+import { range } from '@/utils/array';
 import { checkManageUserAuthorization } from '@/utils/authorization';
 import { RouterOutput } from '@/server/trpc/router/_app';
 import { NextPageWithLayout } from '@/types/page';
@@ -28,8 +30,11 @@ import { Role, Status } from '@prisma/client';
 
 type UserOutput = RouterOutput['user']['getMe'];
 
+const DATA_PER_PAGE = 2;
+
 const ManageUser: NextPageWithLayout = () => {
   const [isOpenModalEditUser, setOpenModalEditUser] = useState(false);
+  const [userDataPage, setUserDataPage] = useState(1);
   const [isOpenModalCreateUser, setOpenModalCreateUser] = useState(false);
   const [isOpenModalDeleteUser, setOpenModalDeleteUser] = useState(false);
   const [isPopUpShow, setPopUpShow] = useState(false);
@@ -38,7 +43,10 @@ const ManageUser: NextPageWithLayout = () => {
 
   const { data: sessionData } = useSession();
   const { data, refetch, isRefetching, isLoading } =
-    trpc.user.getAllUser.useQuery();
+    trpc.user.getAllUser.useQuery({
+      per_page: DATA_PER_PAGE,
+      page: userDataPage,
+    });
 
   const openEditUserModal = (user: UserOutput) => {
     setUserData(user);
@@ -50,8 +58,14 @@ const ManageUser: NextPageWithLayout = () => {
     setOpenModalDeleteUser(true);
   };
 
-  const handleEditUser = (values: EditUserInput) => {
-    console.log(values);
+  const onSuccessEditUser = () => {
+    refetch();
+    setPopUpContent({
+      title: 'User edited',
+      content:
+        'User successfully edited. Note that changing email will make user status to NEW again (need to reverify email)',
+    });
+    setPopUpShow(true);
   };
 
   const onSuccessDeleteUser = () => {
@@ -107,7 +121,7 @@ const ManageUser: NextPageWithLayout = () => {
           </TR>
         </THead>
         <TBody>
-          {data?.map((user) => (
+          {data?.users.map((user) => (
             <TR key={user.id}>
               <TD className="font-medium">{user.id.slice(-5)}</TD>
               <TD>{user.name}</TD>
@@ -117,40 +131,58 @@ const ManageUser: NextPageWithLayout = () => {
                 <Badge color={STATUS_COLOR[user.status]}>{user.status}</Badge>
               </TD>
               <TD>
-                {checkManageUserAuthorization(
-                  sessionData!.user.role,
-                  user.role
-                ) && (
-                  <div className="flex gap-2">
-                    {/* enable edit fro NEW user only for ADMIN role */}
-                    {!(
-                      user.status === Status.NEW &&
-                      sessionData!.user.role !== Role.ADMIN
-                    ) && (
+                <div className="flex min-h-[32px] gap-2">
+                  {checkManageUserAuthorization(
+                    sessionData!.user.role,
+                    user.role
+                  ) && (
+                    <>
+                      {/* enable edit fro NEW user only for ADMIN role */}
+                      {!(
+                        user.status === Status.NEW &&
+                        sessionData!.user.role !== Role.ADMIN
+                      ) && (
+                        <Button
+                          shape="square"
+                          onClick={() => openEditUserModal(user)}
+                        >
+                          <FiEdit3 />
+                        </Button>
+                      )}
                       <Button
                         shape="square"
-                        onClick={() => openEditUserModal(user)}
+                        color="error"
+                        onClick={() => openDeleteUserModal(user)}
                       >
-                        <FiEdit3 />
+                        <FiTrash2 />
                       </Button>
-                    )}
-                    <Button
-                      shape="square"
-                      color="error"
-                      onClick={() => openDeleteUserModal(user)}
-                    >
-                      <FiTrash2 />
-                    </Button>
-                  </div>
-                )}
+                    </>
+                  )}
+                </div>
               </TD>
             </TR>
           ))}
         </TBody>
       </Table>
+      {!data &&
+        range(DATA_PER_PAGE).map((x) => (
+          <div
+            key={x + 'xx'}
+            className="mt-1 h-10 w-full animate-pulse rounded-md bg-neutral-300"
+          />
+        ))}
+
+      <Pagination
+        className="mt-8"
+        setPage={setUserDataPage}
+        page={userDataPage}
+        perPage={DATA_PER_PAGE}
+        totalData={data?.total!}
+      />
+
       <EditUserModal
         userData={userData as EditUserInput}
-        submitEditHandler={handleEditUser}
+        onSuccess={onSuccessEditUser}
         open={isOpenModalEditUser}
         close={() => setOpenModalEditUser(false)}
       />
