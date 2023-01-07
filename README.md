@@ -16,6 +16,6 @@
 
 - run `yarn`
 - setup environment, create .env file from the example
-- run `prisma migrate`
+- run `npx prisma generate`
 - run `yarn dev` to start development server
 - register admin at register page
